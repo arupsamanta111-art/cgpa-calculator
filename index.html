@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#2563EB">
+
+  <title>PushMyGrade CGPA Calculator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f8ff;
+      color: #172033;
+      min-height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    /* Header */
+    .header {
+      background: #2563EB;
+      color: white;
+      border-radius: 22px;
+      padding: 24px 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(37, 99, 235, 0.20);
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand span {
+      color: #dbeafe;
+    }
+
+    .subtitle {
+      margin-top: 7px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid #e5eaf4;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 750;
+      margin-bottom: 16px;
+    }
+
+    /* Subject */
+    .subject {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 12px;
+      background: #fbfdff;
+    }
+
+    .subject-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .subject-number {
+      font-weight: 700;
+      color: #2563EB;
+      font-size: 14px;
+    }
+
+    .remove-btn {
+      border: none;
+      background: #fff3ed;
+      color: #F97316;
+      font-weight: 700;
+      padding: 7px 11px;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: 1fr 110px;
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #dbe2ec;
+      border-radius: 11px;
+      padding: 0 12px;
+      font-size: 14px;
+      background: white;
+      color: #172033;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+    }
+
+    /* Buttons */
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .add-btn {
+      height: 48px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #2563EB;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .calculate-btn {
+      height: 50px;
+      width: 100%;
+      margin-top: 12px;
+      border: none;
+      background: #2563EB;
+      color: white;
+      border-radius: 13px;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 7px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    .calculate-btn:active,
+    .add-btn:active,
+    .reset-btn:active {
+      transform: scale(0.98);
+    }
+
+    .reset-btn {
+      height: 48px;
+      border: 1px solid #fed7aa;
+      background: #fff7ed;
+      color: #F97316;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    /* Result */
+    .result {
+      display: none;
+      text-align: center;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result-label {
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .cgpa-value {
+      font-size: 48px;
+      font-weight: 850;
+      color: #2563EB;
+      margin: 6px 0;
+      letter-spacing: -2px;
+    }
+
+    .scale {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 10px;
+      background: #e8eef8;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 18px 0 10px;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #2563EB;
+      border-radius: 20px;
+      transition: width 0.6s ease;
+    }
+
+    .performance {
+      font-size: 14px;
+      font-weight: 750;
+      color: #334155;
+      margin-top: 10px;
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border-radius: 13px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #172033;
+    }
+
+    .stat-label {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* Notice */
+    .notice {
+      display: none;
+      padding: 12px 14px;
+      margin-top: 12px;
+      border-radius: 11px;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .notice.show {
+      display: block;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 10px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .footer strong {
+      color: #2563EB;
+    }
+
+    @media (max-width: 500px) {
+      .app {
+        padding: 12px 12px 30px;
+      }
+
+      .header {
+        border-radius: 18px;
+        padding: 21px 18px;
+      }
+
+      .card {
+        border-radius: 17px;
+        padding: 16px;
+      }
+
+      .fields {
+        grid-template-columns: 1fr 95px;
+      }
+
+      .cgpa-value {
+        font-size: 44px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        PushMyGrade<span>.</span>
+      </div>
+
+      <div class="subtitle">
+        Simple and accurate CGPA Calculator
+      </div>
+    </header>
+
+
+    <!-- Calculator -->
+    <section class="card">
+
+      <div class="section-title">
+        Enter Your Subjects
+      </div>
+
+      <div id="subjects"></div>
+
+      <div class="button-row">
+
+        <button
+          class="add-btn"
+          onclick="addSubject()">
+          + Add Subject
+        </button>
+
+        <button
+          class="reset-btn"
+          onclick="resetCalculator()">
+          Reset
+        </button>
+
+      </div>
+
+      <div id="notice" class="notice"></div>
+
+      <button
+        class="calculate-btn"
+        onclick="calculateCGPA()">
+        Calculate CGPA
+      </button>
+
+    </section>
+
+
+    <!-- Result -->
+    <section
+      id="result"
+      class="card result">
+
+      <div class="result-label">
+        Your CGPA
+      </div>
+
+      <div
+        id="cgpaValue"
+        class="cgpa-value">
+        0.00
+      </div>
+
+      <div class="scale">
+        out of 10.00
+      </div>
+
+      <div class="progress-container">
+        <div
+          id="progressBar"
+          class="progress-bar">
+        </div>
+      </div>
+
+      <div
+        id="performance"
+        class="performance">
+        —
+      </div>
+
+      <div class="stats">
+
+        <div class="stat">
+          <div
+            id="totalCredits"
+            class="stat-value">
+            0
+          </div>
+
+          <div class="stat-label">
+            Total Credits
+          </div>
+        </div>
+
+        <div class="stat">
+          <div
+            id="totalPoints"
+            class="stat-value">
+            0.00
+          </div>
+
+          <div class="stat-label">
+            Total Quality Points
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <footer class="footer">
+      <strong>PushMyGrade</strong> · Built for students
+    </footer>
+
+  </main>
+
+
+  <script>
+
+    /*
+      PushMyGrade CGPA Calculator
+    */
+
+    let subjectCount = 0;
+
+
+    /*
+      Grade point mapping
+    */
+    const gradePoints = {
+      "O": 10,
+      "A+": 9,
+      "A": 8,
+      "B+": 7,
+      "B": 6,
+      "C": 5,
+      "D": 4,
+      "F": 0
+    };
+
+
+    /*
+      Add a new subject
+    */
+    function addSubject() {
+
+      subjectCount++;
+
+      const container =
+        document.getElementById("subjects");
+
+      const subject =
+        document.createElement("div");
+
+      subject.className = "subject";
+
+      subject.id =
+        "subject-" + subjectCount;
+
+      subject.innerHTML = `
+
+        <div class="subject-top">
+
+          <div class="subject-number">
+            Subject ${subjectCount}
+          </div>
+
+          <button
+            class="remove-btn"
+            onclick="removeSubject(${subjectCount})">
+            Remove
+          </button>
+
+        </div>
+
+        <div class="fields">
+
+          <div>
+
+            <label>
+              Subject Name
+            </label>
+
+            <input
+              type="text"
+              placeholder="e.g. Mathematics"
+              class="subject-name">
+
+          </div>
+
+          <div>
+
+            <label>
+              Credits
+            </label>
+
+            <input
+              type="number"
+              min="0.5"
+              step="0.5"
+              value="3"
+              class="credits">
+
+          </div>
+
+        </div>
+
+        <div style="margin-top:10px">
+
+          <label>
+            Grade
+          </label>
+
+          <select class="grade">
+
+            <option value="">
+              Select Grade
+            </option>
+
+            <option value="O">
+              O — 10
+            </option>
+
+            <option value="A+">
+              A+ — 9
+            </option>
+
+            <option value="A">
+              A — 8
+            </option>
+
+            <option value="B+">
+              B+ — 7
+            </option>
+
+            <option value="B">
+              B — 6
+            </option>
+
+            <option value="C">
+              C — 5
+            </option>
+
+            <option value="D">
+              D — 4
+            </option>
+
+            <option value="F">
+              F — 0
+            </option>
+
+          </select>
+
+        </div>
+      `;
+
+      container.appendChild(subject);
+    }
+
+
+    /*
+      Remove subject
+    */
+    function removeSubject(id) {
+
+      const subject =
+        document.getElementById("subject-" + id);
+
+      if (subject) {
+        subject.remove();
+      }
+
+      renumberSubjects();
+    }
+
+
+    /*
+      Keep subject numbers correct
+    */
+    function renumberSubjects() {
+
+      const subjects =
+        document.querySelectorAll(".subject");
+
+      subjects.forEach((subject, index) => {
+
+        const number =
+          subject.querySelector(".subject-number");
+
+        number.textContent =
+          "Subject " + (index + 1);
+
+      });
+    }
+
+
+    /*
+      Show notification
+    */
+    function showNotice(message) {
+
+      const notice =
+        document.getElementById("notice");
+
+      notice.textContent = message;
+
+      notice.classList.add("show");
+
+      setTimeout(() => {
+        notice.classList.remove("show");
+      }, 3000);
+    }
+
+
+    /*
+      Calculate CGPA
+    */
+    function calculateCGPA() {
+
+      const subjects =
+        document.querySelectorAll(".subject");
+
+      if (subjects.length === 0) {
+
+        showNotice(
+          "Please add at least one subject."
+        );
+
+        return;
+      }
+
+
+      let totalCredits = 0;
+      let totalQualityPoints = 0;
+
+
+      for (const subject of subjects) {
+
+        const credits =
+          parseFloat(
+            subject.querySelector(".credits").value
+          );
+
+        const grade =
+          subject.querySelector(".grade").value;
+
+
+        if (
+          !credits ||
+          credits <= 0 ||
+          !grade
+        ) {
+
+          showNotice(
+            "Please enter valid credits and select a grade for every subject."
+          );
+
+          return;
+        }
+
+
+        const gradePoint =
+          gradePoints[grade];
+
+
+        totalCredits += credits;
+
+        totalQualityPoints +=
+          credits * gradePoint;
+      }
+
+
+      const cgpa =
+        totalQualityPoints / totalCredits;
+
+
+      displayResult(
+        cgpa,
+        totalCredits,
+        totalQualityPoints
+      );
+    }
+
+
+    /*
+      Display result
+    */
+    function displayResult(
+      cgpa,
+      totalCredits,
+      totalQualityPoints
+    ) {
+
+      const result =
+        document.getElementById("result");
+
+      const cgpaValue =
+        document.getElementById("cgpaValue");
+
+      const progressBar =
+        document.getElementById("progressBar");
+
+      const performance =
+        document.getElementById("performance");
+
+
+      cgpaValue.textContent =
+        cgpa.toFixed(2);
+
+
+      document.getElementById(
+        "totalCredits"
+      ).textContent =
+        totalCredits.toFixed(1);
+
+
+      document.getElementById(
+        "totalPoints"
+      ).textContent =
+        totalQualityPoints.toFixed(2);
+
+
+      /*
+        CGPA is out of 10
+      */
+      const percentage =
+        Math.min(cgpa * 10, 100);
+
+      progressBar.style.width =
+        percentage + "%";
+
+
+      /*
+        Performance message
+      */
+      let message = "";
+
+      if (cgpa >= 9) {
+        message = "Outstanding performance";
+      }
+      else if (cgpa >= 8) {
+        message = "Excellent performance";
+      }
+      else if (cgpa >= 7) {
+        message = "Good performance";
+      }
+      else if (cgpa >= 6) {
+        message = "Fair performance";
+      }
+      else if (cgpa >= 5) {
+        message = "Needs improvement";
+      }
+      else {
+        message = "Focus on improving your grades";
+      }
+
+
+      performance.textContent =
+        message;
+
+
+      result.classList.add("show");
+
+
+      result.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+
+    /*
+      Reset calculator
+    */
+    function resetCalculator() {
+
+      document.getElementById(
+        "subjects"
+      ).innerHTML = "";
+
+      subjectCount = 0;
+
+
+      document.getElementById(
+        "result"
+      ).classList.remove("show");
+
+
+      document.getElementById(
+        "notice"
+      ).classList.remove("show");
+
+
+      /*
+        Start with three subjects
+      */
+      addSubject();
+      addSubject();
+      addSubject();
+    }
+
+
+    /*
+      Start calculator
+      */
+    addSubject();
+    addSubject();
+    addSubject();
+
+  </script>
+
+</body>
+</html>
