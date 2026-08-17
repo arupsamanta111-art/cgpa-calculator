@@ -3,7 +3,9 @@ const CACHE_NAME = "pushmygrade-cgpa-v1";
 const APP_FILES = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
